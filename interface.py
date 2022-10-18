@@ -27,7 +27,10 @@ def get_revenue():
         Budget_INR         =  int(data['Budget INR'])
         predictor = MovieRevenuePredictor(Movie_Name, Release_Period, Whether_Remake, Whether_Franchise, Genre, New_Actor, New_Director, New_Music_Director, Lead_Star, Director, Music_Director, Number_of_Screens, Budget_INR)
         revenue = predictor.predict()
+        predictor.save_2_database()
         return f"Movie,{Movie_Name}, can generate '\u20B9' {np.around(revenue,3)} of revenue"
+        
+
     else:
         data = request.args
         Movie_Name         = data.get('Movie Name')
