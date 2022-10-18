@@ -2,6 +2,8 @@ import config
 import pickle
 import json
 import numpy as np
+import pandas as pd
+import sqlalchemy as sa
 
 class MovieRevenuePredictor:
     def __init__(self,Movie_Name,Release_Period,Whether_Remake,Whether_Franchise,Genre,New_Actor,New_Director,New_Music_Director,Lead_Star,Director,Music_Director,Number_of_Screens,Budget_INR):
@@ -44,8 +46,27 @@ class MovieRevenuePredictor:
         music_index = self.encoded_data['columns'].index('Music Director_' + self.Music_Director)
         details[music_index] = 1
 
-        revenue = self.movie_model.predict([details])[0]
-        return revenue
+        self.revenue = self.movie_model.predict([details])[0]
+        return self.revenue
+    def save_2_database(self):
+        engine = sa.create_engine("mysql+pymysql://root:Saurabh1998@localhost:3306/user_data")
+        df = pd.DataFrame({
+            'Movie_Name': [self.Movie_Name],
+            'Release_Period':[self.Release_Period],
+            'Whether_Remake':[self.Whether_Remake],
+            'Whether_Franchise': [self.Whether_Franchise],
+            'Genre':[self.Genre],
+            'New_Actor':[self.New_Actor],
+            'New_Director':[self.New_Director],
+            'New_Music_Director':[self.New_Music_Director],
+            'Lead_Star':[self.Lead_Star],
+            'Director' :[self.Director],
+            'Music_Director':[self.Music_Director],
+            'Number_of_Screens':[self.Number_of_Screens],
+            'Budget_INR':[self.Budget_INR],
+            'Predicted_Revenue':[self.revenue]})
+        df.to_sql(name='movie_revenue_project',con=engine,index=False,if_exists='append')
+          
 
 
 
